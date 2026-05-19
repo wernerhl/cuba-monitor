@@ -16,7 +16,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_index import main as build_index_main  # noqa: E402
-from config import DASHBOARD_JSON, NATIONAL_PATH, PANEL_PATH  # noqa: E402
+from config import DASHBOARD_JSON, DASHBOARD_JSON_DOCS, NATIONAL_PATH, PANEL_PATH  # noqa: E402
 
 
 # Curated key events to mark on the time series
@@ -127,11 +127,12 @@ def main() -> None:
             "code":              "https://github.com/wernerhl/cuba-monitor",
         },
     }
-    DASHBOARD_JSON.parent.mkdir(parents=True, exist_ok=True)
-    with open(DASHBOARD_JSON, "w") as f:
-        json.dump(out, f, indent=2, ensure_ascii=False, default=str)
-    print(f"[dashboard] wrote {DASHBOARD_JSON.name} "
-          f"({DASHBOARD_JSON.stat().st_size/1024:.1f} KB)")
+    for target in (DASHBOARD_JSON, DASHBOARD_JSON_DOCS):
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with open(target, "w") as f:
+            json.dump(out, f, indent=2, ensure_ascii=False, default=str)
+    print(f"[dashboard] wrote {DASHBOARD_JSON.relative_to(DASHBOARD_JSON.parents[1])} "
+          f"+ docs copy ({DASHBOARD_JSON.stat().st_size/1024:.1f} KB)")
     print(f"  last month: {out['panel_window']['end']}")
     print(f"  PC1 share: {diag['pc1_share']}%  eigenvalue ratio: {diag['eigenvalue_ratio']}")
 

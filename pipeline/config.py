@@ -37,9 +37,11 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 PROVINCES_PATH = REPO_ROOT / "data" / "cuba_provinces.geojson"
 PANEL_PATH = REPO_ROOT / "data" / "panel.csv"
 NATIONAL_PATH = REPO_ROOT / "data" / "national_monthly.csv"
+# We keep CSV artifacts canonical under /data/, but GitHub Pages only serves
+# the /docs/ tree, so the *dashboard.json* (which the SPA fetches) is also
+# written into /docs/data/ where the SPA can reach it as ./data/dashboard.json.
 DASHBOARD_JSON = REPO_ROOT / "data" / "dashboard.json"
-# GitHub Pages serves /docs at the site root, but we keep the data canonical
-# in /data and load it from the page using ../data/dashboard.json.
+DASHBOARD_JSON_DOCS = REPO_ROOT / "docs" / "data" / "dashboard.json"
 
 # Per-pixel scales (m) used for reduceRegions. These are deliberately
 # coarser than each sensor's native resolution to keep request payloads

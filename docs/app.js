@@ -24,7 +24,7 @@ Chart.defaults.scale.grid.color = COLORS.grid;
 
 async function load() {
   try {
-    const resp = await fetch('../data/dashboard.json', { cache: 'no-store' });
+    const resp = await fetch('./data/dashboard.json', { cache: 'no-store' });
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json();
     render(data);
