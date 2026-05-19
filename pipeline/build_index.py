@@ -33,11 +33,14 @@ STREAMS = ["no2", "dnb", "ndvi", "ports"]
 
 
 def aggregate_national(df: pd.DataFrame) -> pd.DataFrame:
+    """National monthly means/counts in RAW units, matching paper §7.1
+    and Table 3 (DNB mean radiance in nW/cm²/sr, ports as raw count).
+    Log-transforming DNB/Ports flips three loading signs vs. the paper."""
     nat = df.groupby(["year", "month"]).agg(
         no2=("no2_mean", "mean"),
-        dnb=("dnb_total_lum", lambda s: np.log1p(s.sum(min_count=1))),
+        dnb=("dnb_mean", "mean"),
         ndvi=("ndvi_cropland", "mean"),
-        ports=("port_calls_total", lambda s: np.log1p(s.iloc[0]) if pd.notna(s.iloc[0]) else np.nan),
+        ports=("port_calls_total", "first"),
         fx=("fx_cup_per_usd_informal", "first"),
         thermal_ops=("thermal_n_plants_operational", "mean"),
         import_mt=("import_mt_total", "first"),
@@ -64,14 +67,9 @@ def fit_pca_index(nat: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
     pca = PCA(n_components=len(cols))
     scores = pca.fit_transform(X)
     pc1 = scores[:, 0]
-    # Orient PC1 so that it increases with economic activity. The most
-    # economically-interpretable stream is Ports (more port calls =
-    # unambiguously more trade); we flip PC1 if Ports loads negative.
-    # Fall back to DNB if Ports loading is too small to be trustworthy.
-    ports_loading = pca.components_[0][STREAMS.index("ports")]
-    dnb_loading   = pca.components_[0][STREAMS.index("dnb")]
-    anchor = ports_loading if abs(ports_loading) > 0.2 else dnb_loading
-    flip = anchor < 0
+    # Orient PC1 so DNB loads positively (paper §7.1).
+    dnb_loading = pca.components_[0][STREAMS.index("dnb")]
+    flip = dnb_loading < 0
     if flip:
         pc1 = -pc1
         loadings_pc1 = -pca.components_[0]
