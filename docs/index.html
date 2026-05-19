@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Cuba Concordance Monitor</title>
+<meta name="description" content="Monthly satellite-derived economic concordance index for Cuba. TROPOMI NO₂, VIIRS nightlights, Sentinel-2 NDVI, IMF PortWatch — fused via PCA into a single index, updated monthly." />
+<link rel="stylesheet" href="style.css" />
+<!-- Chart.js + date-fns adapter (CDN; no build step) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+</head>
+<body>
+<header>
+  <h1>Cuba Concordance Monitor</h1>
+  <p class="tagline">Monitoring in the Dark — a monthly satellite-derived economic index for Cuba.</p>
+  <div class="header-meta">
+    <span id="last-updated">Loading…</span>
+    <span id="eigenvalue-ratio"></span>
+    <span><a href="#methodology">methodology</a></span>
+    <span><a href="https://github.com/wernerhl/cuba-monitor">code</a></span>
+  </div>
+</header>
+
+<main>
+  <section class="panel" id="panel-index">
+    <h2>Concordance index (2019 mean = 100)</h2>
+    <p class="sub">First principal component of NO₂, nightlights, NDVI and port-calls, deseasonalized and standardized.</p>
+    <div class="chart-wrap"><canvas id="chart-index"></canvas></div>
+  </section>
+
+  <section class="panel" id="panel-streams">
+    <h2>Component streams (each rebased to 2019 = 100)</h2>
+    <p class="sub">Raw monthly national means — drag the legend to toggle a stream off/on.</p>
+    <div class="chart-wrap"><canvas id="chart-streams"></canvas></div>
+  </section>
+
+  <section class="panel two-col">
+    <div>
+      <h2>Informal CUP / USD &amp; import tonnage</h2>
+      <p class="sub">El Toque median (left) vs PortWatch monthly import MT (right).</p>
+      <div class="chart-wrap"><canvas id="chart-fx"></canvas></div>
+    </div>
+    <div>
+      <h2>Latest subnational nightlights</h2>
+      <p class="sub">Most recent monthly DNB mean radiance per province (nW/cm²/sr).</p>
+      <div class="chart-wrap"><canvas id="chart-subnat"></canvas></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-diagnostics">
+    <h2>PCA diagnostics</h2>
+    <table class="diag">
+      <thead><tr><th>Stream</th><th>PC1 loading</th></tr></thead>
+      <tbody id="loadings-body"></tbody>
+    </table>
+    <p id="diag-meta" class="sub"></p>
+  </section>
+
+  <section class="panel" id="methodology">
+    <h2>Methodology</h2>
+    <ul id="methodology-list"></ul>
+    <p class="sub">Data files: <a href="../data/dashboard.json">dashboard.json</a>, <a href="../data/national_monthly.csv">national_monthly.csv</a>, <a href="../data/panel.csv">panel.csv</a>.</p>
+  </section>
+</main>
+
+<footer>
+  <p>
+    Werner L. Hernani-Limarino · <a href="https://github.com/wernerhl/cuba-monitor">github.com/wernerhl/cuba-monitor</a> ·
+    <span id="cite">Hernani-Limarino, W. L. (2026). <em>Monitoring in the Dark</em>.</span>
+  </p>
+  <p class="sub">
+    Pipeline runs monthly via GitHub Actions. Site has no server: a static SPA reads <code>dashboard.json</code> committed by the workflow.
+  </p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
